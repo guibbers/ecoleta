@@ -13,6 +13,9 @@ const itemsController = new ItemsController();
 // List all items
 routes.get('/items', itemsController.index);
 
+//List all collection points
+routes.get('/points', pointsController.index);
+
 //List specific collection point
 routes.get('/points/:id', pointsController.show);
 

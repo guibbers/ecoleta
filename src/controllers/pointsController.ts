@@ -11,7 +11,12 @@ class PointsController {
 			res.status(400).json({ message: "Point not found." })
 		}
 
-		res.json(point);
+		const items = await knex('items')
+			.join('point_items', 'items.id', '=', 'point_items.item_id')
+			.where('point_items.point_id', id)
+			.select('items.title')
+
+		res.json({ point, items });
 	}
 
 	async create(req: Request, res: Response) {
@@ -46,7 +51,25 @@ class PointsController {
       id: point_id,
       ...point
     });
-	}	
+	}
+
+	async index(req: Request, res: Response) {
+		const { city, uf, items } = req.query;
+		const parsedItems = String(items)
+			.split(',')
+			.map(item=> Number(item.trim()));
+		
+		const points = await knex('points')
+			.join('point_items', 'points.id', '=', 'point_items.point_id')
+			.whereIn('point_items.item_id', parsedItems)
+			.where('city', String(city))
+			.where('uf', String(uf))
+			.distinct()
+			.select('points.*');
+
+		res.json(points);
+		
+	}
 }
 
 export default PointsController;
