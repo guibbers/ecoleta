@@ -47,6 +47,8 @@ class PointsController {
 
 		await trx("point_items").insert(pointItems);
 
+		await trx.commit();
+
 		res.json({
       id: point_id,
       ...point
