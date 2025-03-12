@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import axios from "axios";
-import type { LatLngExpression } from "leaflet";
+import type { LatLngExpression, LeafletMouseEvent } from "leaflet";
 import api from "../../services/api";
 
 import "./styles.css";
@@ -29,6 +29,19 @@ const CreatePoint = () => {
 	const [selectedUF, setSelectedUF] = useState<string>("0");
 	const [cities, setCities] = useState<string[]>([]);
 	const [selectedCity, setSelectedCity] = useState<string>('0');
+	const [selectedPosition, setSelectedPosition ] = useState<[number, number]>([0, 0]);
+	const [initialPosition, setInitialPosition] = useState<[number, number]>();
+
+	const handleMapClick = (lat: number, lng: number) => {
+    setSelectedPosition([lat, lng]);
+	}
+
+	useEffect(()=> {
+		navigator.geolocation.getCurrentPosition(position => {
+			const { latitude, longitude } = position.coords;
+			setInitialPosition([latitude, longitude]);
+		})
+	}, [])
 
 	useEffect(() => {
 		api.get("items").then((response) => {
@@ -71,8 +84,15 @@ const CreatePoint = () => {
 
 	function handleSelectCity(event: ChangeEvent<HTMLSelectElement>) {
 		const city = event.target.value;
-		setSelectedCity(city);
-		
+		setSelectedCity(city);		
+	}
+
+	function ClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+		useMapEvent('click', (e) => {
+			onMapClick(e.latlng.lat, e.latlng.lng);
+		});
+	
+		return null;
 	}
 
 	return (
@@ -119,17 +139,16 @@ const CreatePoint = () => {
 						<span>Selecione o endereço no mapa</span>
 					</legend>
 
-					<MapContainer
-						center={[-22.9035542, -43.1058349] as LatLngExpression}
-						zoom={15}
-						scrollWheelZoom={true}
-					>
-						<TileLayer
-							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-							url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-						/>
-						<Marker position={[-22.9035542, -43.1058349]} />
-					</MapContainer>
+					{initialPosition && (
+						<MapContainer center={initialPosition} zoom={15} scrollWheelZoom={true}>
+							<TileLayer
+								attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+								url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+							/>
+							<Marker position={selectedPosition} />
+							<ClickHandler onMapClick={handleMapClick} />
+						</MapContainer>
+					)}
 
 					<div className="field-group">
 						<div className="field">
