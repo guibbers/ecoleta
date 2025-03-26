@@ -7,6 +7,8 @@ import { RectButton } from 'react-native-gesture-handler'
 
 const Detail = ()=>{
 
+  
+
   const navigation = useNavigation();
     function handleNavigateBack(){
       navigation.goBack();
