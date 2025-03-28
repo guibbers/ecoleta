@@ -1,6 +1,10 @@
 import express from "express";
 
+import multer from 'multer';
+import multerConfig from './config/multer';
+
 const routes = express.Router();
+const upload = multer(multerConfig);
 
 //Import Controllers
 import PointsController from "./controllers/pointsController";
@@ -20,6 +24,20 @@ routes.get('/points', pointsController.index);
 routes.get('/points/:id', pointsController.show);
 
 // Create collect point
-routes.post('/points', pointsController.create);
+routes.post('/points', upload.single('image') , pointsController.create);
 
 export default routes;
+
+// {   
+//   "name": "Mercadinho",
+//   "email": "contato@pomar.com.br",
+//   "whatsapp": "21999999999",
+//   "latitude": -22.903727,
+//   "longitude": -43.1013029,
+//   "city": "Niterói",
+//   "uf": "RJ",
+//   "items": [
+//       3,
+//       4
+//   ]
+//   }
