@@ -9,9 +9,9 @@ import { FiArrowLeft } from "react-icons/fi";
 import { MapContainer, TileLayer, Marker, useMapEvent } from "react-leaflet";
 import axios from "axios";
 import api from "../../services/api";
-
 import "./styles.css";
 import logo from "../../assets/logo.svg";
+import Dropzone from "../../components/Dropzone";
 
 interface Item {
 	id: number;
@@ -169,6 +169,8 @@ const CreatePoint = () => {
 					Cadastro do <br /> ponto de coleta
 				</h1>
 
+				<Dropzone />
+
 				<fieldset>
 					<legend>
 						<h2>Dados</h2>
@@ -268,6 +270,7 @@ const CreatePoint = () => {
 							<li
 								key={item.id}
 								onClick={() => handleSelectItem(item.id)}
+								onKeyPress={()=> {}}
 								className={selectedItems?.includes(item.id) ? "selected" : ""}
 							>
 								<img src={item.image_url} alt={item.title} />
