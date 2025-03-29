@@ -15,9 +15,7 @@ class PointsController {
 				...point,
 				image_url: `http://192.168.1.4:3333/uploads/${point.image}`,
 		}
-
-	res.json(serializedPoint);
-
+		
 		const items = await knex('items')
 			.join('point_items', 'items.id', '=', 'point_items.item_id')
 			.where('point_items.point_id', id)
